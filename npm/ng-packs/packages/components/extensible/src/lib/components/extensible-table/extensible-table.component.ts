@@ -22,7 +22,7 @@ import { AsyncPipe, NgComponentOutlet, NgTemplateOutlet } from '@angular/common'
 import { Observable, filter, map } from 'rxjs';
 
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { NgxDatatableModule, SelectionType } from '@swimlane/ngx-datatable';
+import { DatatableComponent, NgxDatatableModule, SelectionType } from '@swimlane/ngx-datatable';
 
 import {
   ABP,
@@ -117,6 +117,10 @@ export class ExtensibleTableComponent<R = any> implements OnChanges, AfterViewIn
   
   @Input() selected: any[] = [];
   @Output() selectionChange = new EventEmitter<any[]>();
+
+  @Input() infiniteScroll = false;
+  @Input() isLoading = false;
+  @Output() loadMore = new EventEmitter<void>();
 
   hasAtLeastOnePermittedAction: boolean;
 
@@ -247,10 +251,23 @@ export class ExtensibleTableComponent<R = any> implements OnChanges, AfterViewIn
     this.selectionChange.emit(selected);
   }
 
+  onScroll(scrollEvent) {
+    if (
+      this.infiniteScroll &&
+      !this.isLoading &&
+      scrollEvent?.target?.offsetHeight + scrollEvent?.target?.scrollTop >=
+        scrollEvent?.target?.scrollHeight - 1
+    ) {
+      this.loadMore.emit();
+    }
+  }
+
   ngAfterViewInit(): void {
-    this.list?.requestStatus$?.pipe(filter(status => status === 'loading')).subscribe(() => {
+    if (!this.infiniteScroll) {
+      this.list?.requestStatus$?.pipe(filter(status => status === 'loading')).subscribe(() => {
         this.data = [];
         this.cdr.markForCheck();
       });
+    }
   }
 }
