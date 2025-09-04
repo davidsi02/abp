@@ -22,7 +22,7 @@ import { AsyncPipe, NgComponentOutlet, NgTemplateOutlet } from '@angular/common'
 import { Observable, filter, map } from 'rxjs';
 
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { DatatableComponent, NgxDatatableModule, SelectionType } from '@swimlane/ngx-datatable';
+import { NgxDatatableModule, SelectionType } from '@swimlane/ngx-datatable';
 
 import {
   ABP,
